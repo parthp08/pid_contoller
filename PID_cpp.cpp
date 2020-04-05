@@ -1,12 +1,12 @@
 class PID {
     protected:
-        float output;
-        float I = 0; // integrator
-        float D = 0; // differentiator
-        float prev_error = 0;
-        float error_d1; // for digital implementation
-        float error_d2;
-        float y_d1; 
+        double output;
+        double I = 0; // integrator
+        double D = 0; // differentiator
+        double prev_error = 0;
+        double error_d1; // for digital implementation
+        double error_d2;
+        double y_d1; 
 
     public:
     PID();
@@ -24,7 +24,7 @@ class PID {
      * @param limit Saturation limit
      * @return Output Command
     */
-    float pid_simple(float y_d, float y, float dt, float kp, float ki, float kd, float limit);
+    double pid_simple(double y_d, double y, double dt, double kp, double ki, double kd, double limit);
 
     /**
      * Digital implementation of PID
@@ -36,7 +36,7 @@ class PID {
      * @param limit Saturation limit
      * @return Output Command
     */
-    float pid_digital(float y_d, float y, float kp, float ki, float kd, float limit);
+    double pid_digital(double y_d, double y, double kp, double ki, double kd, double limit);
 };
 
 PID::PID() {
@@ -49,8 +49,8 @@ PID::PID() {
 
 PID::~PID() = default;
 
-float PID::pid_simple(float y_d, float y, float dt, float kp, float ki, float kd, float limit) {
-    float error = y_d - y;
+double PID::pid_simple(double y_d, double y, double dt, double kp, double ki, double kd, double limit) {
+    double error = y_d - y;
     
     this->I += error*dt;
     this->D = (error - prev_error)/dt;
@@ -58,7 +58,7 @@ float PID::pid_simple(float y_d, float y, float dt, float kp, float ki, float kd
     this->prev_error = error;
 
     // unsaturated output
-    float output_unsat = kp*error + ki*I + kd*D;
+    double output_unsat = kp*error + ki*I + kd*D;
 
     // check for saturation
     if (output_unsat > limit) {this->output = limit;}
@@ -73,15 +73,15 @@ Reference: "Digital Implementation of PID Controller for Temperature Control", P
 International Journal of Scientific & Engineering Research Volume 8, Issue 5, May-2017,
 ISSN 2229-5518
 */
-float PID::pid_digital(float y_d, float y, float kp, float ki, float kd, float limit) {
+double PID::pid_digital(double y_d, double y, double kp, double ki, double kd, double limit) {
     
     // current error
-    float error = y_d - y;
+    double error = y_d - y;
 
-    float K1 = kp + ki + kd;
-    float K2 = -kp - 2*kd;
+    double K1 = kp + ki + kd;
+    double K2 = -kp - 2*kd;
     // unsaturated output
-    float output_unsat = y_d1 + K1*error + K2*error_d1 + kd*error_d2;
+    double output_unsat = y_d1 + K1*error + K2*error_d1 + kd*error_d2;
     
     // check for saturation
     if (output_unsat > limit) {this->output = limit;}
